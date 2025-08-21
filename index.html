@@ -31,18 +31,20 @@
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
       font-family: Arial, sans-serif;
       background-color: var(--light-gray);
       color: var(--text-dark);
-      height: 100vh;
-      overflow: hidden;
     }
 
     .app-container {
       display: flex;
       height: 100vh;
       width: 100vw;
+      overflow: hidden;
     }
 
     /* Sidebar Styles */
@@ -57,6 +59,7 @@
       height: 100vh;
       z-index: 100;
       transition: transform 0.3s ease;
+      overflow: hidden;
     }
 
     .sidebar.collapsed {
@@ -110,6 +113,7 @@
       padding: 25px 0 25px 8px;
       background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
       position: relative;
+      overflow: hidden;
     }
 
     .nav-slider {
@@ -160,10 +164,10 @@
     .main-content {
       flex: 1;
       margin-left: 172px;
-      padding: 0;
-      overflow: hidden;
       transition: margin-left 0.3s ease;
       height: 100vh;
+      overflow: hidden;
+      position: relative;
     }
 
     .main-content.expanded {
@@ -201,8 +205,6 @@
       box-shadow: 0 6px 25px rgba(0,123,255,0.4);
     }
 
-
-
   </style>
 </head>
 <body>
@@ -239,7 +241,8 @@
         id="toolFrame" 
         src="https://www.tresdias-stl.org/teamviewer" 
         frameborder="0" 
-        style="width: 100%; height: 100%; border: none; border-radius: 8px;"
+        scrolling="no"
+        style="width: 100%; height: 100%; border: none; overflow: hidden; display: block;"
         title="Team Tools Application">
       </iframe>
     </main>
