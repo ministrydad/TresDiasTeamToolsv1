@@ -5738,8 +5738,8 @@
         // --- GLOBAL STATE FOR CURRENT USER'S ORGANIZATION ---
         let currentUserOrgId = null;
 
-        // --- NEW: Timeout handler for stuck sessions ---
-        let sessionInitializationTimeout = null;
+        // --- FIX: Session initialization flag to prevent startup race condition ---
+        let isSessionInitialized = false;
 
         // --- ROBUST FIX for SecurityError in constrained environments ---
                 // This is a more complete mock of the browser's Storage API.
@@ -5816,10 +5816,6 @@
                     SECRETARIAT.init();
                     UM.init();
 
-                    // --- NEW: Success signal, clear the timeout ---
-                    console.log("Session initialization complete. Clearing timeout.");
-                    clearTimeout(sessionInitializationTimeout);
-
                 } else {
                     // This case handles a valid user who isn't part of any organization.
                     // This might happen during signup or if their membership is removed.
@@ -5828,8 +5824,6 @@
             } catch (error) {
                 console.error('Failed to initialize user session:', error);
                 showMainStatus(error.message, true);
-                // --- NEW: Clear timeout on failure too ---
-                clearTimeout(sessionInitializationTimeout);
                 // If initialization fails, the user cannot use the app. Log them out.
                 await supabaseClient.auth.signOut();
             }
@@ -11755,46 +11749,25 @@
             const forgotPasswordView = $('#forgot-password-view');
 
             function init() {
-                // --- NEW: Loop Breaker Logic ---
-                if (sessionStorage.getItem('isReloadingAfterTimeout') === 'true') {
-                    console.warn("Detected reload after session timeout. Forcing sign out to clear stale session.");
-                    sessionStorage.removeItem('isReloadingAfterTimeout');
-                    // We call signOut directly. The onAuthStateChange listener will then pick up the SIGNED_OUT event.
-                    supabaseClient.auth.signOut();
-                }
-                // --- END: Loop Breaker ---
-
                 // Listen for authentication state changes
                 supabaseClient.auth.onAuthStateChange(async (event, session) => {
-                    // --- NEW: Timeout logic START ---
-                    // Always clear any previous timeout when the auth state changes.
-                    clearTimeout(sessionInitializationTimeout);
-                    // --- NEW: Timeout logic END ---
-
-                    console.log("Auth State Change Event:", event);
                     const user = session?.user;
-                    if (user) {
-                        console.log("User detected in session:", user.email);
-                        
-                        // --- NEW: Set a timeout to detect a stuck session ---
-                        sessionInitializationTimeout = setTimeout(() => {
-                            console.error("SESSION TIMEOUT: Initialization took too long. This indicates a stale or stuck session. Forcing reload to clear the session.");
-                            showMainStatus("Session timed out. Reloading to clear stale session...", true);
-                            
-                            // Set the flag BEFORE reloading
-                            sessionStorage.setItem('isReloadingAfterTimeout', 'true');
-                            
-                            // Force a full page reload
-                            window.location.reload();
-                        }, 5000); // 5 seconds
-                        // --- NEW: Timeout logic END ---
 
-                        // User is logged in, initialize their session to get org_id
+                    // --- FIX: Core session logic ---
+                    // This block acts as a gatekeeper. It ensures the main app 
+                    // initialization only runs ONCE per session, preventing a race condition
+                    // caused by multiple 'onAuthStateChange' events firing on page load.
+                    if (user && !isSessionInitialized) {
+                        isSessionInitialized = true; // Set flag immediately to block re-entry
                         await initializeUserSession(user);
-                    } else {
-                        console.log("No user session found. Calling updateUI to show login screen.");
+                    } else if (!user) {
+                        // When the user fully signs out, reset the flag for the next login session.
+                        isSessionInitialized = false;
                     }
-                    // This function will handle showing/hiding the auth screen or app container
+                    // --- END FIX ---
+
+                    // This function handles showing/hiding the auth screen vs. the app container.
+                    // It's safe to run this on every auth event.
                     updateUI(user);
                 });
 
@@ -11947,9 +11920,3 @@
 </body>
 
 </html>
-
-
-
-
-
-
