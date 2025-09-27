@@ -4245,7 +4245,11 @@
                     <li class="nav-item"><a href="#" data-app-id="secretariat-app"><span class="nav-text">Secretariat</span></a></li>
                 </ul>
                 <div class="sidebar-footer">
+                    <div id="userProfileWidget" style="display: none; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--border); text-align: center;">
+                        <span id="loggedInUserName" style="font-weight: 700; font-size: 1rem;"></span>
+                    </div>
                     <ul class="sidebar-nav">
+                        <li class="nav-item"><a href="#" data-app-id="account-settings"><span class="nav-text">Account</span></a></li>
                         <li class="nav-item"><a href="#" data-app-id="app-settings"><span class="nav-text">Settings</span></a></li>
                         <li class="nav-item" id="superAdminLink" style="display: none;"><a href="#" data-app-id="super-admin-app"><span class="nav-text">Super Admin</span></a></li>
                         <li class="nav-item"><a href="#" id="logoutButton"><span class="nav-text" style="color: var(--accentD);">Log Out</span></a></li>
@@ -5234,6 +5238,34 @@
                 <!-- =============== END: SUPER ADMIN PANEL =============== -->
                 <!-- ====================================================== -->
 
+                <!-- ====================================================== -->
+                <!-- ============== START: ACCOUNT SETTINGS PANEL ========== -->
+                <!-- ====================================================== -->
+                <section id="account-settings" class="app-panel" style="display:none;">
+                    <div class="card pad" style="max-width: 600px; margin: 0 auto;">
+                        <div class="section-title">Change Your Password</div>
+                        <p style="color: var(--muted); margin-top: -10px; margin-bottom: 20px;">
+                            Enter your new password below. For security, you will be logged out after a successful password change.
+                        </p>
+                        <div class="grid grid-2">
+                            <div class="field">
+                                <label class="label">New Password</label>
+                                <input id="newPassword" class="input" type="password" placeholder="Must be at least 6 characters">
+                            </div>
+                            <div class="field">
+                                <label class="label">Confirm New Password</label>
+                                <input id="confirmPassword" class="input" type="password">
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px;">
+                            <button id="updatePasswordBtn" class="btn btn-primary">Update Password</button>
+                        </div>
+                    </div>
+                </section>
+                <!-- ====================================================== -->
+                <!-- =============== END: ACCOUNT SETTINGS PANEL ========== -->
+                <!-- ====================================================== -->
+
             </div>
         </main>
     </div>
@@ -5480,62 +5512,39 @@
     <!-- ====================================================== -->
     <div id="userManagementModal" class="modal">
         <div class="box">
-            <div class="head" id="userModalTitle">Add User From Directory</div>
+            <div class="head" id="userModalTitle">Create New User</div>
             <div class="body">
-                <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 20px;">
-                    Select a person from your community's directory to grant them access to this organization's hub. Their email must already be associated with a login account.
-                </p>
+                <div class="field">
+                    <label class="label">Select Person from Directory</label>
+                    <select id="userDirectorySelect" class="select">
+                        <option value="">Loading directory...</option>
+                    </select>
+                </div>
                 <div class="grid grid-2">
-                    <div class="field">
-                        <label class="label">Select Person</label>
-                        <select id="userSelectDropdown" class="select">
-                            <option value="">Loading directory...</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label class="label">User Email</label>
-                        <input id="userEmailDisplay" class="input" type="email" placeholder="Email will appear here" readonly>
-                    </div>
-                </div>
-                <div class="grid grid-2" style="margin-top: 16px;">
                      <div class="field">
-                        <label class="label">User Role</label>
-                        <select id="userRoleSelect" class="select">
-                            <option value="User" selected>User</option>
-                            <option value="Admin">Admin</option>
-                        </select>
+                        <label class="label">First Name</label>
+                        <input id="userFirstNameInput" class="input" type="text" readonly>
+                    </div>
+                     <div class="field">
+                        <label class="label">Last Name</label>
+                        <input id="userLastNameInput" class="input" type="text" readonly>
                     </div>
                 </div>
-                <div class="section-title" style="margin-top: 16px;">Access Permissions</div>
-                <p style="color: var(--muted); font-size: 0.9rem; margin-top: -10px; margin-bottom: 20px;">
-                    Select which application modules this user can access.
-                </p>
-                <div id="permissions-grid">
-                    <div class="permission-item">
-                        <label class="label" for="perm-team-viewer">Team Viewer</label>
-                        <label class="switch"><input type="checkbox" id="perm-team-viewer-app" checked><span class="slider"></span></label>
-                    </div>
-                    <div class="permission-item">
-                        <label class="label" for="perm-team-book">Team Book</label>
-                        <label class="switch"><input type="checkbox" id="perm-team-book" checked><span class="slider"></span></label>
-                    </div>
-                    <div class="permission-item">
-                        <label class="label" for="perm-team-meetings">Team Meetings</label>
-                        <label class="switch"><input type="checkbox" id="perm-meeting-check-in-app" checked><span class="slider"></span></label>
-                    </div>
-                    <div class="permission-item">
-                        <label class="label" for="perm-candidate-reg">Candidate Registration</label>
-                        <label class="switch"><input type="checkbox" id="perm-candidate-registration" checked><span class="slider"></span></label>
-                    </div>
-                    <div class="permission-item">
-                        <label class="label" for="perm-secretariat">Secretariat</label>
-                        <label class="switch"><input type="checkbox" id="perm-secretariat-app" checked><span class="slider"></span></label>
-                    </div>
+                <div class="field">
+                    <label class="label">Email Address</label>
+                    <input id="userEmailInput" class="input" type="email" readonly>
+                </div>
+                <div class="field">
+                    <label class="label">Assign Role</label>
+                    <select id="userRoleSelect" class="select">
+                        <option value="User" selected>User</option>
+                        <option value="Admin">Admin</option>
+                    </select>
                 </div>
             </div>
             <div class="foot">
                 <button id="userModalCancel" class="btn">Cancel</button>
-                <button id="userModalSave" class="btn btn-primary">Add User</button>
+                <button id="userModalSave" class="btn btn-primary">Create User & Send Welcome</button>
             </div>
         </div>
     </div>
@@ -5738,9 +5747,6 @@
         // --- GLOBAL STATE FOR CURRENT USER'S ORGANIZATION ---
         let currentUserOrgId = null;
 
-        // --- NEW: Timeout handler for stuck sessions ---
-        let sessionInitializationTimeout = null;
-
         // --- ROBUST FIX for SecurityError in constrained environments ---
                 // This is a more complete mock of the browser's Storage API.
         const noOpStorage = {
@@ -5788,7 +5794,7 @@
                     currentUserOrgId = data.org_id;
                     console.log('User session successfully initialized with Org ID:', currentUserOrgId);
 
-                    // --- START: Super Admin Check ---
+                    // --- START: Super Admin Check & User Profile Display ---
                     const { data: profileData, error: profileError } = await supabaseClient
                         .from('profiles')
                         .select('full_name')
@@ -5796,11 +5802,24 @@
                         .single();
 
                     if (profileError) {
-                        console.warn("Could not check for Super Admin status:", profileError.message);
-                    } else if (profileData && profileData.full_name === 'Super Admin') {
-                        console.log("Super Admin detected. Enabling admin panel.");
-                        document.getElementById('superAdminLink').style.display = 'block';
-                        SUPER_ADMIN.init(); // Initialize the Super Admin module
+                        console.warn("Could not fetch user profile:", profileError.message);
+                    } else if (profileData) {
+                        // Display user name for ANY logged-in user
+                        const userWidget = document.getElementById('userProfileWidget');
+                        const userNameEl = document.getElementById('loggedInUserName');
+                        
+                        if(userWidget && userNameEl && profileData.full_name) {
+                            const firstName = profileData.full_name.split(' ')[0];
+                            userNameEl.textContent = `Welcome, ${firstName}`;
+                            userWidget.style.display = 'block';
+                        }
+
+                        // Check specifically for Super Admin to show the link
+                        if (profileData.full_name === 'Super Admin') {
+                            console.log("Super Admin detected. Enabling admin panel.");
+                            document.getElementById('superAdminLink').style.display = 'block';
+                            SUPER_ADMIN.init();
+                        }
                     }
                     // --- END: Super Admin Check ---
 
@@ -5815,10 +5834,7 @@
                     TV.init();
                     SECRETARIAT.init();
                     UM.init();
-
-                    // --- NEW: Success signal, clear the timeout ---
-                    console.log("Session initialization complete. Clearing timeout.");
-                    clearTimeout(sessionInitializationTimeout);
+                    ACCOUNT.init();
 
                 } else {
                     // This case handles a valid user who isn't part of any organization.
@@ -5828,8 +5844,6 @@
             } catch (error) {
                 console.error('Failed to initialize user session:', error);
                 showMainStatus(error.message, true);
-                // --- NEW: Clear timeout on failure too ---
-                clearTimeout(sessionInitializationTimeout);
                 // If initialization fails, the user cannot use the app. Log them out.
                 await supabaseClient.auth.signOut();
             }
@@ -5928,21 +5942,10 @@
 
         const supabaseClient = supabase.createClient(sbURL, sbKEY, {
             auth: {
-                storage: (() => {
-                    try {
-                        // Test if localStorage is accessible
-                        window.localStorage.setItem('_supabase_test', '1');
-                        window.localStorage.removeItem('_supabase_test');
-                        return window.localStorage;
-                    } catch (e) {
-                        // If not, return our no-op mock storage
-                        console.warn("localStorage is not available. Supabase session will not be persisted.");
-                        return noOpStorage;
-                    }
-                })(),
-                autoRefreshToken: true,
-                persistSession: true,
-                detectSessionInUrl: true
+                storage: noOpStorage,
+                autoRefreshToken: false,
+                persistSession: false,
+                detectSessionInUrl: false,
             },
         });
 
@@ -11385,128 +11388,152 @@
         // --- NEW: USER MANAGEMENT (UM) MODULE ---
         const UM = (function() {
             const $ = sel => document.querySelector(sel);
+            let directory = []; // State for the combined directory
+            let selectedPerson = null; // State for the selected person's full data object
 
-            async function openUserModal() {
+            function openUserModal() {
                 $('#userManagementModal').style.display = 'block';
-                const dropdown = $('#userSelectDropdown');
-                const emailDisplay = $('#userEmailDisplay');
-                dropdown.innerHTML = '<option value="">Loading directory...</option>';
-                dropdown.disabled = true;
-                emailDisplay.value = '';
-
-                try {
-                    const { data: men, error: menError } = await supabaseClient.from('men_raw').select('PescadoreKey, First, Last, Preferred, Email').eq('org_id', currentUserOrgId);
-                    if (menError) throw menError;
-
-                    const { data: women, error: womenError } = await supabaseClient.from('women_raw').select('PescadoreKey, First, Last, Preferred, Email').eq('org_id', currentUserOrgId);
-                    if (womenError) throw womenError;
-
-                    const allDirectoryMembers = [...men, ...women]
-                        .filter(p => p.Email) // Only include people with an email
-                        .map(p => ({
-                            id: p.PescadoreKey,
-                            name: `${p.Last}, ${p.Preferred || p.First}`,
-                            email: p.Email
-                        }))
-                        .sort((a, b) => a.name.localeCompare(b.name));
-
-                    if (allDirectoryMembers.length === 0) {
-                        dropdown.innerHTML = '<option value="">No members with emails in directory</option>';
-                        return;
-                    }
-
-                    dropdown.innerHTML = '<option value="" selected disabled>Select a person...</option>';
-                    allDirectoryMembers.forEach(person => {
-                        const option = document.createElement('option');
-                        option.value = person.email; // Use email as value for simplicity
-                        option.textContent = person.name;
-                        option.dataset.email = person.email;
-                        dropdown.add(option);
-                    });
-
-                    dropdown.disabled = false;
-
-                } catch (error) {
-                    console.error('Error loading directory for user management:', error);
-                    dropdown.innerHTML = `<option value="">Error loading directory</option>`;
-                }
+                // Reset form to its initial state
+                $('#userDirectorySelect').value = '';
+                $('#userFirstNameInput').value = '';
+                $('#userLastNameInput').value = '';
+                $('#userEmailInput').value = '';
+                $('#userRoleSelect').value = 'User';
+                selectedPerson = null;
             }
             
             function closeUserModal() {
                 $('#userManagementModal').style.display = 'none';
-                $('#userSelectDropdown').innerHTML = '<option value="">Loading directory...</option>';
-                $('#userEmailDisplay').value = '';
-                $('#userRoleSelect').value = 'User';
-                $('#permissions-grid').querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+                // Reset button state just in case
+                const saveButton = $('#userModalSave');
+                saveButton.disabled = false;
+                saveButton.textContent = 'Create User & Send Welcome';
             }
 
-            function setupDropdownListener() {
-                $('#userSelectDropdown').addEventListener('change', e => {
-                    const selectedOption = e.target.options[e.target.selectedIndex];
-                    $('#userEmailDisplay').value = selectedOption.dataset.email || '';
-                });
+            async function loadDirectoryForSelection() {
+                const selectEl = $('#userDirectorySelect');
+                try {
+                    const menPromise = supabaseClient.from('men_raw').select('PescadoreKey, First, Last, Preferred, Email, Phone1').eq('org_id', currentUserOrgId);
+                    const womenPromise = supabaseClient.from('women_raw').select('PescadoreKey, First, Last, Preferred, Email, Phone1').eq('org_id', currentUserOrgId);
+                    
+                    const [{ data: men, error: menError }, { data: women, error: womenError }] = await Promise.all([menPromise, womenPromise]);
+
+                    if (menError) throw menError;
+                    if (womenError) throw womenError;
+
+                    directory = [...(men || []), ...(women || [])];
+                    
+                    // Sort by last name, then first name for easy searching
+                    directory.sort((a, b) => {
+                        const lastNameComp = (a.Last || '').localeCompare(b.Last || '');
+                        if (lastNameComp !== 0) return lastNameComp;
+                        return (a.First || '').localeCompare(b.First || '');
+                    });
+
+                    // Populate the dropdown with the sorted names
+                    selectEl.innerHTML = '<option value="">Select a person...</option>';
+                    directory.forEach(person => {
+                        const option = document.createElement('option');
+                        option.value = person.PescadoreKey;
+                        // Handle cases where first or last name might be missing
+                        const displayName = `${person.Last || ''}, ${person.Preferred || person.First || ''}`;
+                        option.textContent = displayName.trim();
+                        selectEl.appendChild(option);
+                    });
+                    
+                } catch (error) {
+                    console.error("Failed to load directory for user creation:", error);
+                    selectEl.innerHTML = '<option value="">Error loading directory</option>';
+                }
             }
 
-            async function addUser() {
-                const email = $('#userEmailDisplay').value;
-                const role = $('#userRoleSelect').value;
-
-                if (!email) {
-                    alert('Please select a user from the directory.');
+            function handleDirectorySelection(event) {
+                const selectedKey = event.target.value;
+                if (!selectedKey) {
+                    // Clear fields if "Select a person..." is chosen
+                    $('#userFirstNameInput').value = '';
+                    $('#userLastNameInput').value = '';
+                    $('#userEmailInput').value = '';
+                    selectedPerson = null;
                     return;
                 }
 
-                try {
-                    // 1. Find the user in the 'profiles' table to get their auth user_id
-                    const { data: profile, error: profileError } = await supabaseClient
-                        .from('profiles')
-                        .select('user_id')
-                        .eq('email', email)
-                        .maybeSingle();
-
-                    if (profileError || !profile) {
-                        alert('This person has not created a login account yet. They must sign up before they can be added.');
-                        throw new Error(profileError?.message || 'Profile not found for this email.');
-                    }
-                    
-                    const userId = profile.user_id;
-
-                    // 2. Check if they are already a member of this organization
-                    const { data: existingMembership, error: checkError } = await supabaseClient
-                        .from('memberships')
-                        .select('user_id')
-                        .eq('user_id', userId)
-                        .eq('org_id', currentUserOrgId)
-                        .maybeSingle();
-
-                    if (checkError) throw checkError;
-
-                    if (existingMembership) {
-                        alert('This user is already a member of your organization.');
-                        return;
-                    }
-
-                    // 3. Insert into the memberships table
-                    const { error: insertError } = await supabaseClient
-                        .from('memberships')
-                        .insert({
-                            user_id: userId,
-                            org_id: currentUserOrgId,
-                            role: role
-                        });
-
-                    if (insertError) throw insertError;
-                    
-                    showMainStatus('User added successfully!');
-                    closeUserModal();
-                    renderUserList(); // Refresh the list
-
-                } catch (error) {
-                    console.error('Error adding user:', error);
-                    alert('Failed to add user: ' + error.message);
+                selectedPerson = directory.find(p => String(p.PescadoreKey) === selectedKey);
+                if (selectedPerson) {
+                    $('#userFirstNameInput').value = selectedPerson.First || '';
+                    $('#userLastNameInput').value = selectedPerson.Last || '';
+                    $('#userEmailInput').value = selectedPerson.Email || '';
                 }
             }
-            
+
+            async function createUser() {
+                if (!selectedPerson) {
+                    showMainStatus('Please select a person from the directory.', true);
+                    return;
+                }
+
+                const email = selectedPerson.Email;
+                const phone = selectedPerson.Phone1;
+                
+                if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+                    showMainStatus('The selected person does not have a valid email address.', true);
+                    return;
+                }
+                if (!phone) {
+                    showMainStatus("The selected person does not have a phone number, which is required for their temporary password.", true);
+                    return;
+                }
+                
+                const saveButton = $('#userModalSave');
+                saveButton.disabled = true;
+                saveButton.textContent = 'Creating...';
+
+                try {
+                    const role = $('#userRoleSelect').value;
+                    
+                    const payload = {
+                        person: {
+                            Email: selectedPerson.Email,
+                            Phone1: selectedPerson.Phone1,
+                            First: selectedPerson.First,
+                            Last: selectedPerson.Last
+                        },
+                        role: role.toLowerCase() // Convert role to lowercase before sending
+                    };
+
+                    // --- FIX START: Explicitly pass the Authorization header ---
+                    // This ensures the backend function knows who is making the request.
+                    const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+                    if (sessionError) throw new Error("Could not get user session.");
+                    if (!session) throw new Error("User not authenticated.");
+                    
+                    const { error } = await supabaseClient.functions.invoke('create-user', {
+                        body: payload,
+                        headers: {
+                            'Authorization': `Bearer ${session.access_token}`,
+                        }
+                    });
+                    // --- FIX END ---
+
+                    if (error) {
+                        // The detailed error from the Edge Function is often nested. This extracts it.
+                        const errorMessage = error.context?.json?.error || error.message;
+                        throw new Error(errorMessage);
+                    }
+
+                    showMainStatus(`User created for ${email}. Welcome email sent.`);
+                    closeUserModal();
+                    await renderUserList(); // Refresh the list to show the new user
+
+                } catch (error) {
+                    console.error('Failed to create user:', error);
+                    showMainStatus(`Failed to create user: ${error.message}`, true);
+                } finally {
+                    saveButton.disabled = false;
+                    saveButton.textContent = 'Create User & Send Welcome';
+                }
+            }
+
             async function renderUserList() {
                 const tbody = $('#user-list-tbody');
                 tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Loading users...</td></tr>';
@@ -11553,9 +11580,71 @@
             function init() {
                 $('#inviteUserBtn')?.addEventListener('click', openUserModal);
                 $('#userModalCancel')?.addEventListener('click', closeUserModal);
-                $('#userModalSave')?.addEventListener('click', addUser);
-                setupDropdownListener();
+                $('#userModalSave')?.addEventListener('click', createUser); // Changed from addUser
+                $('#userDirectorySelect')?.addEventListener('change', handleDirectorySelection);
+
+                loadDirectoryForSelection(); // Load the directory when the module starts
                 renderUserList();
+            }
+
+            return {
+                init
+            };
+        })();
+
+
+        // --- NEW: ACCOUNT MANAGEMENT MODULE ---
+        const ACCOUNT = (function() {
+            const $ = sel => document.querySelector(sel);
+
+            async function handlePasswordUpdate() {
+                const newPassword = $('#newPassword').value;
+                const confirmPassword = $('#confirmPassword').value;
+
+                // Basic validation
+                if (!newPassword || !confirmPassword) {
+                    showMainStatus('Please fill out both new password fields.', true);
+                    return;
+                }
+                if (newPassword.length < 6) {
+                    showMainStatus('New password must be at least 6 characters long.', true);
+                    return;
+                }
+                if (newPassword !== confirmPassword) {
+                    showMainStatus('New passwords do not match.', true);
+                    return;
+                }
+
+                const updateButton = $('#updatePasswordBtn');
+                updateButton.disabled = true;
+                updateButton.textContent = 'Updating...';
+
+                try {
+                    const { error } = await supabaseClient.auth.updateUser({
+                        password: newPassword
+                    });
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    alert('Password updated successfully. You will now be logged out for security.');
+                    await supabaseClient.auth.signOut();
+
+                } catch (error) {
+                    console.error('Password update error:', error);
+                    showMainStatus(`Error: ${error.message}`, true);
+                } finally {
+                    updateButton.disabled = false;
+                    updateButton.textContent = 'Update Password';
+                    // Clear fields regardless of outcome
+                    $('#newPassword').value = '';
+                    $('#confirmPassword').value = '';
+                }
+            }
+
+            function init() {
+                $('#updatePasswordBtn')?.addEventListener('click', handlePasswordUpdate);
             }
 
             return {
@@ -11742,7 +11831,7 @@
     <!-- ====================================================== -->
     <!-- ============== START: AUTHENTICATION SCRIPT ========== -->
     <!-- ====================================================== -->
-    <script>
+        <script>
         const AUTH = (function() {
             const $ = sel => document.querySelector(sel);
 
@@ -11755,47 +11844,30 @@
             const forgotPasswordView = $('#forgot-password-view');
 
             function init() {
-                // --- NEW: Loop Breaker Logic ---
-                if (sessionStorage.getItem('isReloadingAfterTimeout') === 'true') {
-                    console.warn("Detected reload after session timeout. Forcing sign out to clear stale session.");
-                    sessionStorage.removeItem('isReloadingAfterTimeout');
-                    // We call signOut directly. The onAuthStateChange listener will then pick up the SIGNED_OUT event.
-                    supabaseClient.auth.signOut();
-                }
-                // --- END: Loop Breaker ---
-
                 // Listen for authentication state changes
                 supabaseClient.auth.onAuthStateChange(async (event, session) => {
-                    // --- NEW: Timeout logic START ---
-                    // Always clear any previous timeout when the auth state changes.
-                    clearTimeout(sessionInitializationTimeout);
-                    // --- NEW: Timeout logic END ---
-
-                    console.log("Auth State Change Event:", event);
                     const user = session?.user;
-                    if (user) {
-                        console.log("User detected in session:", user.email);
-                        
-                        // --- NEW: Set a timeout to detect a stuck session ---
-                        sessionInitializationTimeout = setTimeout(() => {
-                            console.error("SESSION TIMEOUT: Initialization took too long. This indicates a stale or stuck session. Forcing reload to clear the session.");
-                            showMainStatus("Session timed out. Reloading to clear stale session...", true);
-                            
-                            // Set the flag BEFORE reloading
-                            sessionStorage.setItem('isReloadingAfterTimeout', 'true');
-                            
-                            // Force a full page reload
-                            window.location.reload();
-                        }, 5000); // 5 seconds
-                        // --- NEW: Timeout logic END ---
 
-                        // User is logged in, initialize their session to get org_id
+                    if (user) {
                         await initializeUserSession(user);
-                    } else {
-                        console.log("No user session found. Calling updateUI to show login screen.");
                     }
-                    // This function will handle showing/hiding the auth screen or app container
+                    
+                    // This function handles showing/hiding the auth screen vs. the app container.
                     updateUI(user);
+
+                    // --- START: Password Recovery Redirect ---
+                    // This block checks if the login event was a password recovery.
+                    if (event === 'PASSWORD_RECOVERY') {
+                        // If so, programmatically click the "Account" link in the sidebar
+                        // to take the user directly to the password change form.
+                        const accountLink = document.querySelector('a[data-app-id="account-settings"]');
+                        if (accountLink) {
+                            accountLink.click();
+                            // Give the user a clear instruction.
+                            showMainStatus('Please create your new password.');
+                        }
+                    }
+                    // --- END: Password Recovery Redirect ---
                 });
 
                 // Attach event listeners
@@ -11934,6 +12006,8 @@
 
             async function handleLogout(e) {
                 e.preventDefault();
+                const userWidget = $('#userProfileWidget');
+                if (userWidget) userWidget.style.display = 'none';
                 await supabaseClient.auth.signOut();
                 // onAuthStateChanged will handle the UI update
             }
